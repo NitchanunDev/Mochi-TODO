@@ -12,7 +12,10 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  dateStrings: true, // สำคัญ: ให้คอลัมน์ DATE/DATETIME ส่งกลับเป็น string "YYYY-MM-DD" ธรรมดา
+                      // แทนที่จะเป็น JS Date object ซึ่งพอแปลงเป็น JSON จะกลายเป็น ISO timestamp
+                      // ยาวๆ ("2026-07-05T00:00:00.000Z") ทำให้ <input type="date"> อ่านค่าไม่ได้
 })
 
 export default pool

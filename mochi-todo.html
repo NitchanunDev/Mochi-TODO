@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>もち Mochi To-Do</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFF9F2;
+    --card: #FDFBF7;
+    --text: #4A3B32;
+    --text-soft: #8a7a6d;
+    --matcha: #E2F0D9;
+    --matcha-deep: #9CC08A;
+    --sakura: #FCE4E6;
+    --sakura-deep: #E8A6AD;
+    --lavender: #E8DAEF;
+    --lavender-deep: #B99CD0;
+    --shadow: rgba(74, 59, 50, 0.07);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 8% 12%, rgba(226,240,217,0.5) 0%, transparent 40%),
+      radial-gradient(circle at 92% 85%, rgba(252,228,230,0.5) 0%, transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(232,218,239,0.4) 0%, transparent 35%);
+    font-family: 'Quicksand', sans-serif;
+    color: var(--text);
+    display:flex;
+    justify-content:center;
+    padding: 48px 20px 90px;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  .wrap{
+    width:100%;
+    max-width: 480px;
+    position:relative;
+  }
+
+  /* ---------- header ---------- */
+  .header{
+    text-align:center;
+    margin-bottom: 28px;
+    position:relative;
+  }
+  .mascot{
+    width:76px;
+    height:auto;
+    margin: 0 auto 6px;
+    display:block;
+    filter: drop-shadow(0 6px 10px var(--shadow));
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0) rotate(-2deg); }
+    50%{ transform: translateY(-8px) rotate(2deg); }
+  }
+  h1{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size: 28px;
+    margin: 4px 0 2px;
+    letter-spacing: 0.5px;
+  }
+  .subtitle{
+    font-size: 14px;
+    color: var(--text-soft);
+    font-weight:500;
+  }
+
+  /* ---------- stats pill ---------- */
+  .stats{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom: 22px;
+    flex-wrap:wrap;
+  }
+  .pill{
+    background: var(--card);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight:600;
+    box-shadow: 0 4px 14px var(--shadow);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .pill .dot{
+    width:8px;height:8px;border-radius:50%;
+  }
+  .dot.matcha{ background: var(--matcha-deep);}
+  .dot.sakura{ background: var(--sakura-deep);}
+  .dot.lavender{ background: var(--lavender-deep);}
+
+  /* ---------- input card ---------- */
+  .add-card{
+    background: var(--card);
+    border-radius: 22px;
+    padding: 8px 8px 8px 20px;
+    box-shadow: 0 10px 30px var(--shadow);
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 22px;
+    transition: box-shadow .25s ease, transform .25s ease;
+  }
+  .add-card:focus-within{
+    box-shadow: 0 12px 32px rgba(74,59,50,0.12);
+    transform: translateY(-1px);
+  }
+  .add-card input[type="text"]{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-family:'Quicksand', sans-serif;
+    font-size: 15px;
+    font-weight:600;
+    color: var(--text);
+    padding: 12px 0;
+  }
+  .add-card input[type="text"]::placeholder{
+    color: #c9b9ac;
+    font-weight:500;
+  }
+
+  select.tag-select{
+    border:none;
+    outline:none;
+    background: var(--lavender);
+    color: var(--text);
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size: 12px;
+    border-radius: 999px;
+    padding: 8px 10px;
+    cursor:pointer;
+    appearance:none;
+    text-align:center;
+  }
+
+  .add-btn{
+    border:none;
+    background: linear-gradient(135deg, #F6C9CE, #E8A6AD);
+    color:#fff;
+    width: 44px;
+    height:44px;
+    min-width:44px;
+    border-radius: 50%;
+    font-size: 22px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 6px 14px rgba(232,166,173,0.5);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .add-btn:hover{ transform: scale(1.08); }
+  .add-btn:active{ transform: scale(0.88); box-shadow: 0 3px 8px rgba(232,166,173,0.5); }
+
+  /* ---------- filter tabs ---------- */
+  .filters{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-bottom: 20px;
+  }
+  .filter-btn{
+    border:none;
+    background: transparent;
+    color: var(--text-soft);
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor:pointer;
+    transition: all .2s ease;
+  }
+  .filter-btn.active{
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  /* ---------- list ---------- */
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+  }
+
+  .task{
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px 16px 16px 14px;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    box-shadow: 0 6px 20px var(--shadow);
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, opacity .3s ease;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn{
+    from{ opacity:0; transform: scale(0.85) translateY(8px); }
+    to{ opacity:1; transform: scale(1) translateY(0); }
+  }
+  .task:hover{ transform: translateY(-2px); box-shadow: 0 10px 26px rgba(74,59,50,0.1); }
+  .task.removing{
+    opacity:0;
+    transform: scale(0.8) translateX(30px);
+  }
+
+  /* checkbox */
+  .check{
+    width: 28px;
+    height:28px;
+    min-width:28px;
+    border-radius: 10px;
+    border: 2.5px solid #E4D6C8;
+    background: #fff;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: all .18s ease;
+    flex-shrink:0;
+  }
+  .check svg{
+    width:16px;
+    height:16px;
+    opacity:0;
+    transform: scale(0.4);
+    transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .check.checked{
+    background: linear-gradient(135deg, #F6C9CE, #E8A6AD);
+    border-color: #E8A6AD;
+    animation: squish .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .check.checked svg{
+    opacity:1;
+    transform: scale(1);
+  }
+  @keyframes squish{
+    0%{ transform: scale(1); }
+    35%{ transform: scale(0.75, 1.2); }
+    60%{ transform: scale(1.15, 0.85); }
+    100%{ transform: scale(1); }
+  }
+
+  .task-body{ flex:1; min-width:0; }
+  .task-text{
+    font-size: 15px;
+    font-weight: 600;
+    word-break: break-word;
+    transition: all .25s ease;
+  }
+  .task.done .task-text{
+    color: #c9b9ac;
+    text-decoration: line-through;
+    text-decoration-color: #d8c7bb;
+  }
+  .tag{
+    display:inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+  }
+  .tag.matcha{ background: var(--matcha); color: #5c7a4d; }
+  .tag.sakura{ background: var(--sakura); color: #b06770; }
+  .tag.lavender{ background: var(--lavender); color: #7a5a95; }
+
+  .task-actions{
+    display:flex;
+    gap:4px;
+    flex-shrink:0;
+  }
+
+  .icon-btn{
+    border:none;
+    background:transparent;
+    color:#d8c7bb;
+    font-size:15px;
+    cursor:pointer;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: all .15s ease;
+  }
+  .icon-btn.edit-btn:hover{ background: var(--lavender); color:#7a5a95; transform: scale(1.1); }
+  .icon-btn.del-btn:hover{ background: var(--sakura); color:#b06770; transform: rotate(8deg) scale(1.1); }
+
+  /* edit mode */
+  .task.editing .task-text{ display:none; }
+  .edit-input{
+    display:none;
+    width:100%;
+    font-family:'Quicksand', sans-serif;
+    font-size:15px;
+    font-weight:600;
+    color: var(--text);
+    background: #fff;
+    border: 2px solid var(--lavender-deep);
+    border-radius: 12px;
+    padding: 7px 10px;
+    outline:none;
+  }
+  .task.editing .edit-input{ display:block; }
+  .task.editing .tag{ margin-top:8px; }
+
+  /* empty state */
+  .empty{
+    text-align:center;
+    padding: 50px 20px;
+    color: var(--text-soft);
+  }
+  .empty img{
+    width:100px;
+    margin-bottom:14px;
+    opacity:0.9;
+    animation: float 4s ease-in-out infinite;
+  }
+  .empty p{
+    font-weight:600;
+    font-size:14px;
+    margin:0;
+  }
+  .empty span{
+    font-size:12px;
+    color:#c9b9ac;
+  }
+
+  /* save status */
+  .save-status{
+    text-align:center;
+    font-size:11px;
+    color:#c9b9ac;
+    font-weight:600;
+    margin-top: 22px;
+    min-height: 14px;
+    transition: opacity .3s ease;
+  }
+
+  /* corner mochi */
+  .corner-mochi{
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    width: 64px;
+    opacity: 0.9;
+    animation: float 5s ease-in-out infinite;
+    pointer-events:none;
+  }
+
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background: #eee0d4; border-radius:8px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <svg class="mascot" viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="55" rx="42" ry="32" fill="#FDFBF7" stroke="#F0E4D8" stroke-width="2"/>
+      <ellipse cx="27" cy="40" rx="9" ry="9" fill="#FCE4E6" opacity="0.8"/>
+      <ellipse cx="73" cy="40" rx="9" ry="9" fill="#E2F0D9" opacity="0.8"/>
+      <circle cx="35" cy="53" r="3" fill="#4A3B32"/>
+      <circle cx="65" cy="53" r="3" fill="#4A3B32"/>
+      <path d="M40 63 Q50 70 60 63" stroke="#C98D8D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="24" cy="60" rx="5" ry="3.5" fill="#FCE4E6" opacity="0.7"/>
+      <ellipse cx="76" cy="60" rx="5" ry="3.5" fill="#FCE4E6" opacity="0.7"/>
+    </svg>
+    <h1>もち Mochi List</h1>
+    <div class="subtitle">little squishy tasks for a cozy day ⋆｡°✩</div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="add-card">
+    <input type="text" id="taskInput" placeholder="Add a soft little task..." maxlength="80">
+    <select class="tag-select" id="tagSelect">
+      <option value="matcha">🍵 Matcha</option>
+      <option value="sakura">🌸 Sakura</option>
+      <option value="lavender">💜 Lavender</option>
+    </select>
+    <button class="add-btn" id="addBtn" aria-label="Add task">+</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">To-Do</button>
+    <button class="filter-btn" data-filter="done">Done</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <div class="save-status" id="saveStatus"></div>
+</div>
+
+<svg class="corner-mochi" viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="50" cy="55" rx="38" ry="30" fill="#FDFBF7" stroke="#F0E4D8" stroke-width="2"/>
+  <ellipse cx="30" cy="42" rx="8" ry="8" fill="#E8DAEF" opacity="0.8"/>
+  <ellipse cx="70" cy="42" rx="8" ry="8" fill="#FCE4E6" opacity="0.8"/>
+  <circle cx="38" cy="54" r="2.6" fill="#4A3B32"/>
+  <circle cx="62" cy="54" r="2.6" fill="#4A3B32"/>
+  <path d="M42 62 Q50 67 58 62" stroke="#C98D8D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+</svg>
+
+<script>
+  const STORAGE_KEY = 'mochi-tasks-v1';
+
+  let tasks = [];
+  let filter = "all";
+  let nextId = 1;
+  let editingId = null;
+  let loaded = false;
+
+  const listEl = document.getElementById('list');
+  const statsEl = document.getElementById('stats');
+  const input = document.getElementById('taskInput');
+  const tagSelect = document.getElementById('tagSelect');
+  const addBtn = document.getElementById('addBtn');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const saveStatusEl = document.getElementById('saveStatus');
+
+  const tagLabel = { matcha: 'Matcha', sakura: 'Sakura', lavender: 'Lavender' };
+
+  const heartIcon = `<svg viewBox="0 0 24 24" fill="white"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.2 4.5 5.8 4c2.1-.3 4 .7 6.2 3 2.2-2.3 4.1-3.3 6.2-3 3.6.5 5.4 4.1 3.8 7.7C19.5 16.4 12 21 12 21z"/></svg>`;
+  const editIcon = `✎`;
+
+  const defaultTasks = [
+    { id: 1, text: "Sip warm hōjicha tea", tag: "matcha", done: true },
+    { id: 2, text: "Water the tiny succulents", tag: "sakura", done: false },
+    { id: 3, text: "Write in the gratitude journal", tag: "lavender", done: false },
+  ];
+
+  function showStatus(msg, temporary = true){
+    saveStatusEl.textContent = msg;
+    if(temporary){
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(() => { saveStatusEl.textContent = ''; }, 1500);
+    }
+  }
+
+  async function loadTasks(){
+    listEl.innerHTML = `<div class="empty"><p>Warming up the mochi…</p></div>`;
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value){
+        const parsed = JSON.parse(result.value);
+        tasks = parsed.tasks || [];
+        nextId = parsed.nextId || (tasks.reduce((m, t) => Math.max(m, t.id), 0) + 1);
+      } else {
+        tasks = defaultTasks;
+        nextId = 4;
+      }
+    } catch(err){
+      tasks = defaultTasks;
+      nextId = 4;
+    }
+    loaded = true;
+    render();
+  }
+
+  async function saveTasks(){
+    if(!loaded) return;
+    try{
+      showStatus('saving…', false);
+      const ok = await window.storage.set(STORAGE_KEY, JSON.stringify({ tasks, nextId }), false);
+      if(ok){
+        showStatus('✓ saved');
+      } else {
+        showStatus('couldn\'t save, try again');
+      }
+    } catch(err){
+      showStatus('couldn\'t save, try again');
+    }
+  }
+
+  function render(){
+    const filtered = tasks.filter(t => filter === 'all' ? true : filter === 'active' ? !t.done : t.done);
+
+    if(filtered.length === 0){
+      listEl.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" width="100">
+            <ellipse cx="50" cy="55" rx="42" ry="32" fill="#FDFBF7" stroke="#F0E4D8" stroke-width="2"/>
+            <ellipse cx="27" cy="40" rx="9" ry="9" fill="#E8DAEF" opacity="0.7"/>
+            <ellipse cx="73" cy="40" rx="9" ry="9" fill="#FCE4E6" opacity="0.7"/>
+            <path d="M32 53 Q35 50 38 53" stroke="#4A3B32" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <path d="M62 53 Q65 50 68 53" stroke="#4A3B32" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <ellipse cx="50" cy="65" rx="6" ry="4" fill="#C98D8D" opacity="0.6"/>
+          </svg>
+          <p>All squishy and quiet here~</p>
+          <span>${filter === 'done' ? 'nothing finished yet' : 'add a little task above'}</span>
+        </div>`;
+    } else {
+      listEl.innerHTML = filtered.map(t => `
+        <div class="task ${t.done ? 'done' : ''} ${editingId === t.id ? 'editing' : ''}" data-id="${t.id}">
+          <div class="check ${t.done ? 'checked' : ''}" data-action="toggle" role="checkbox" aria-checked="${t.done}" tabindex="0">
+            ${heartIcon}
+          </div>
+          <div class="task-body">
+            <div class="task-text">${escapeHtml(t.text)}</div>
+            <input type="text" class="edit-input" data-action="edit-input" value="${escapeHtml(t.text)}" maxlength="80">
+            <span class="tag ${t.tag}">${tagLabel[t.tag]}</span>
+          </div>
+          <div class="task-actions">
+            ${editingId === t.id
+              ? `<button class="icon-btn edit-btn" data-action="save-edit" aria-label="Save task">✓</button>`
+              : `<button class="icon-btn edit-btn" data-action="edit" aria-label="Edit task">${editIcon}</button>`
+            }
+            <button class="icon-btn del-btn" data-action="delete" aria-label="Delete task">✕</button>
+          </div>
+        </div>
+      `).join('');
+
+      if(editingId !== null){
+        const activeInput = listEl.querySelector(`.task[data-id="${editingId}"] .edit-input`);
+        if(activeInput){
+          activeInput.focus();
+          activeInput.setSelectionRange(activeInput.value.length, activeInput.value.length);
+        }
+      }
+    }
+
+    const total = tasks.length;
+    const done = tasks.filter(t => t.done).length;
+    statsEl.innerHTML = `
+      <div class="pill"><span class="dot matcha"></span>${total} total</div>
+      <div class="pill"><span class="dot sakura"></span>${total - done} left</div>
+      <div class="pill"><span class="dot lavender"></span>${done} done</div>
+    `;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function addTask(){
+    const val = input.value.trim();
+    if(!val) return;
+    tasks.push({ id: nextId++, text: val, tag: tagSelect.value, done: false });
+    input.value = '';
+    render();
+    saveTasks();
+  }
+
+  function commitEdit(id, taskEl){
+    const inputEl = taskEl.querySelector('.edit-input');
+    const val = inputEl.value.trim();
+    const task = tasks.find(t => t.id === id);
+    if(val){
+      task.text = val;
+    }
+    editingId = null;
+    render();
+    saveTasks();
+  }
+
+  addBtn.addEventListener('click', () => {
+    addBtn.style.transform = 'scale(0.85)';
+    setTimeout(() => addBtn.style.transform = '', 120);
+    addTask();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') addTask();
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filter = btn.dataset.filter;
+      editingId = null;
+      render();
+    });
+  });
+
+  listEl.addEventListener('click', (e) => {
+    const taskEl = e.target.closest('.task');
+    if(!taskEl) return;
+    const id = Number(taskEl.dataset.id);
+
+    if(e.target.closest('[data-action="toggle"]')){
+      const task = tasks.find(t => t.id === id);
+      task.done = !task.done;
+      render();
+      saveTasks();
+    }
+
+    if(e.target.closest('[data-action="edit"]')){
+      editingId = id;
+      render();
+    }
+
+    if(e.target.closest('[data-action="save-edit"]')){
+      commitEdit(id, taskEl);
+    }
+
+    if(e.target.closest('[data-action="delete"]')){
+      taskEl.classList.add('removing');
+      setTimeout(() => {
+        tasks = tasks.filter(t => t.id !== id);
+        if(editingId === id) editingId = null;
+        render();
+        saveTasks();
+      }, 250);
+    }
+  });
+
+  listEl.addEventListener('keydown', (e) => {
+    const check = e.target.closest('[data-action="toggle"]');
+    if(check && (e.key === 'Enter' || e.key === ' ')){
+      e.preventDefault();
+      check.click();
+      return;
+    }
+
+    if(e.target.matches('[data-action="edit-input"]')){
+      const taskEl = e.target.closest('.task');
+      const id = Number(taskEl.dataset.id);
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        commitEdit(id, taskEl);
+      } else if(e.key === 'Escape'){
+        editingId = null;
+        render();
+      }
+    }
+  });
+
+  listEl.addEventListener('blur', (e) => {
+    if(e.target.matches('[data-action="edit-input"]')){
+      const taskEl = e.target.closest('.task');
+      const id = Number(taskEl.dataset.id);
+      if(editingId === id) commitEdit(id, taskEl);
+    }
+  }, true);
+
+  loadTasks();
+</script>
+</body>
+</html>
